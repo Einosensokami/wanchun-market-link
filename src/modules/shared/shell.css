@@ -1,0 +1,18 @@
+:root { font-family: Inter, "Noto Sans TC", "PingFang TC", system-ui, sans-serif; color: #18342a; background: #f6f4ee; font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; }
+.app-shell { min-height: 100vh; background: radial-gradient(circle at 88% 0%, #f8e4b9 0, transparent 26rem), #f6f4ee; }
+.site-header { height: 78px; max-width: 1180px; padding: 0 28px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand-lockup { display: flex; align-items: center; gap: 10px; }
+.brand-mark { width: 38px; height: 38px; display: grid; place-items: center; color: #fffdf5; background: #1f7550; border-radius: 13px 13px 13px 3px; box-shadow: 0 6px 14px #1f755033; }
+.brand-lockup h1 { margin: 0; color: #18342a; font-size: 18px; font-weight: 800; letter-spacing: .06em; }
+.eyebrow { margin: 0 0 2px; color: #75877c; font-size: 9px; font-weight: 700; letter-spacing: .12em; }
+.view-switcher { display: flex; padding: 4px; background: #e9e9df; border-radius: 12px; }
+.view-switcher button { border: 0; color: #66776d; background: transparent; padding: 9px 13px; cursor: pointer; border-radius: 9px; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; transition: .18s ease; }
+.view-switcher button.active { color: #1a6546; background: #fffdf8; box-shadow: 0 1px 5px #223b2b1a; }
+.demo-notice { max-width: 1124px; margin: 0 auto; padding: 10px 15px; border: 1px solid #e9d6ab; border-radius: 10px; background: #fff8e6; color: #806633; display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.5; }
+.shell-content { max-width: 1180px; min-height: calc(100vh - 186px); margin: auto; padding: 24px 28px 40px; }
+.site-footer { max-width: 1180px; padding: 20px 28px; margin: auto; border-top: 1px solid #dfe3d7; color: #78867e; display: flex; gap: 14px; align-items: center; font-size: 12px; }
+.site-footer div { color: #286d50; display: flex; gap: 6px; align-items: center; font-weight: 700; }.site-footer span { flex: 1; }.site-footer a { color: #286d50; display: flex; align-items: center; text-decoration: none; font-weight: 700; }
+@media (max-width: 600px) { .site-header { height: auto; padding: 18px 18px 12px; align-items: flex-start; flex-direction: column; gap: 14px; }.view-switcher { width: 100%; }.view-switcher button { flex: 1; justify-content: center; }.demo-notice { margin: 0 18px; }.site-footer { padding: 18px; flex-wrap: wrap; }.site-footer span { flex-basis: 100%; order: 3; } .shell-content { min-height: calc(100vh - 250px); padding: 20px 18px 32px; } }
