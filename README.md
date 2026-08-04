@@ -44,6 +44,6 @@ npm run test
 1. 在 LINE Developers Console 建立 LINE Login channel 與 LIFF app，啟用 `openid` scope，並將部署後的 HTTPS 網址設為 Endpoint URL。
 2. 將 LIFF ID 設為 `VITE_LIFF_ID`（這是公開設定）。
 3. 設定 Edge Function secrets：`LINE_LOGIN_CHANNEL_ID`、高熵的 `LINE_SUBJECT_HASH_SECRET`，以及完全相同的 `APP_ORIGIN`。
-4. 部署 migration 與 Function：`npx supabase db push`、`npx supabase functions deploy line-claim-coupon`。
+4. 在 **Settings → API Keys** 建立名為 `function_admin` 的 secret key；再為 `line-claim-coupon` 設定伺服器端 secrets（`APP_ORIGIN`、`LINE_LOGIN_CHANNEL_ID`、`LINE_SUBJECT_HASH_SECRET`）。最後部署：`npx supabase functions deploy line-claim-coupon --no-verify-jwt`。Function 會從 Supabase 提供的 `SUPABASE_SECRET_KEYS` 讀取 `function_admin`，並在伺服器端驗證 LINE ID token。
 
 LINE channel secret、Supabase secret/service key 與 LINE subject 都不可寫入 `.env`、前端程式或版本控制。

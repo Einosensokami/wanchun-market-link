@@ -17,6 +17,15 @@ function requiredEnv(name: string) {
   return value
 }
 
+function functionAdminKey() {
+  const keys = JSON.parse(requiredEnv('SUPABASE_SECRET_KEYS')) as Record<string, unknown>
+  const key = keys.function_admin
+  if (typeof key !== 'string' || !key.startsWith('sb_secret_')) {
+    throw new Error('Missing required secret API key: function_admin')
+  }
+  return key
+}
+
 async function hashLineSubject(subject: string, secret: string) {
   const key = await crypto.subtle.importKey('raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
   const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(subject))
@@ -50,7 +59,9 @@ Deno.serve(async (request) => {
     const channelId = requiredEnv('LINE_LOGIN_CHANNEL_ID')
     const claims = await verifyLineIdToken(idToken, channelId)
     const subjectHash = await hashLineSubject(claims.sub, requiredEnv('LINE_SUBJECT_HASH_SECRET'))
-    const admin = createClient(requiredEnv('SUPABASE_URL'), requiredEnv('SUPABASE_SERVICE_ROLE_KEY'), { auth: { persistSession: false, autoRefreshToken: false } })
+    // Read the modern server-only API key injected by Supabase. It is never
+    // exposed to the browser or stored in a VITE_* environment variable.
+    const admin = createClient(requiredEnv('SUPABASE_URL'), functionAdminKey(), { auth: { persistSession: false, autoRefreshToken: false } })
 
     const { data: existingIdentity, error: identityError } = await admin
       .from('line_identities')

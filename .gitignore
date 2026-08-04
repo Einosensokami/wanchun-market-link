@@ -1,8 +1,29 @@
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Local application settings. `.env.example` documents required public variables only.
 .env
 .env.*
 !.env.example
+.envrc
+
+# Hosting-provider state generated on individual machines or during deployment.
+.netlify/
+.vercel/
+.wrangler/
+
+# Supabase CLI state is specific to a linked project and can reveal internal endpoints.
 supabase/.temp/
+supabase/.branches/
 .temp/
+
+# Credentials and exported certificates must never enter source control.
+*.pem
+*.p12
+*.pfx
+service-account*.json
+firebase-adminsdk*.json
+
+# Operating-system metadata.
+.DS_Store
