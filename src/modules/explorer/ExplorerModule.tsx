@@ -5,7 +5,7 @@ import { IntentSelector } from './components/IntentSelector'
 import { RecommendationCard } from './components/RecommendationCard'
 import { SectionHeader } from './components/SectionHeader'
 import { VisitPreview } from './components/VisitPreview'
-import { AuthenticationRequiredError, claimOfferCoupon, getPublishedDemoOffer, type PublishedOffer } from './supabaseOffers'
+import { AuthenticationRequiredError, CouponClaimError, claimOfferCoupon, getPublishedDemoOffer, type PublishedOffer } from './supabaseOffers'
 import type { ClaimedCoupon, ExplorerStage, VisitorIntent } from './types'
 import type { CouponLifecycle } from '../shared/couponLifecycle'
 
@@ -53,7 +53,9 @@ export function ExplorerModule({ couponStatus, onClaimCoupon }: ExplorerModulePr
       onClaimCoupon()
       setStage('coupon')
     } catch (error) {
-      setClaimError(error instanceof AuthenticationRequiredError ? error.message : '領券服務暫時無法使用，請稍後再試。')
+      if (error instanceof AuthenticationRequiredError) setClaimError(error.message)
+      else if (error instanceof CouponClaimError) setClaimError(`領券暫時無法完成（${error.code}）。`)
+      else setClaimError('領券服務暫時無法使用，請稍後再試。')
     } finally {
       setIsClaiming(false)
     }

@@ -15,6 +15,13 @@ export class AuthenticationRequiredError extends Error {
   }
 }
 
+export class CouponClaimError extends Error {
+  constructor(readonly code: string) {
+    super(`Coupon claim failed: ${code}`)
+    this.name = 'CouponClaimError'
+  }
+}
+
 interface OfferRow {
   id: string
   benefit_text: string
@@ -57,6 +64,12 @@ export async function claimOfferCoupon(offerId: string): Promise<string> {
   const { data, error } = await supabase.functions.invoke('line-claim-coupon', { body: { idToken, offerId } })
   const coupon = data as { couponCode?: string } | null
 
-  if (error || !coupon?.couponCode) throw new Error('領券暫時無法完成，請稍後再試。')
+  if (error) {
+    const response = 'context' in error && error.context instanceof Response ? error.context : null
+    const body = response ? await response.clone().json().catch(() => null) as { error?: unknown } | null : null
+    const code = typeof body?.error === 'string' ? body.error : `request_${response?.status ?? 'failed'}`
+    throw new CouponClaimError(code)
+  }
+  if (!coupon?.couponCode) throw new CouponClaimError('invalid_coupon_response')
   return coupon.couponCode
 }
