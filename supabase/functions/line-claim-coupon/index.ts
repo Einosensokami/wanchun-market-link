@@ -49,7 +49,7 @@ Deno.serve(async (request) => {
   const allowedOrigin = requiredEnv('APP_ORIGIN')
   const origin = request.headers.get('Origin') ?? ''
   if (origin !== allowedOrigin) return response({ error: 'origin_not_allowed' }, 403, allowedOrigin)
-  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': allowedOrigin, 'Access-Control-Allow-Headers': 'authorization, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' } })
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': allowedOrigin, 'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' } })
   if (request.method !== 'POST') return response({ error: 'method_not_allowed' }, 405, allowedOrigin)
 
   try {
