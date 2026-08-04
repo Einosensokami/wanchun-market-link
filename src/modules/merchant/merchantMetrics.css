@@ -1,0 +1,10 @@
+.merchant-funnel{padding-top:16px;margin-top:12px;border-top:1px solid #dfe8e2}
+.merchant-funnel-title{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.merchant-funnel-title strong{font-size:.88rem}.merchant-funnel-title span{color:#718178;font-size:.72rem}
+.merchant-funnel ol{display:grid;gap:9px;padding:0;margin:13px 0 0;list-style:none}
+.merchant-funnel li>div{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:baseline}
+.merchant-funnel li span{color:#52665b;font-size:.78rem}.merchant-funnel li strong{font-size:.87rem}.merchant-funnel li small{min-width:28px;color:#6d8274;font-size:.71rem;text-align:right}
+.merchant-funnel li i{display:block;min-width:16%;height:6px;margin-top:4px;border-radius:99px;background:linear-gradient(90deg,#4d8a68,#a7cdb4)}
+.merchant-ai-insight{display:flex;gap:9px;padding:12px;margin-top:16px;border:1px solid #d9e8dc;border-radius:12px;color:#315c43;background:#f2f8f3}
+.merchant-ai-insight svg{flex:none;margin-top:2px;color:#3f8060}.merchant-ai-insight strong,.merchant-ai-insight span,.merchant-ai-insight small{display:block}
+.merchant-ai-insight strong{font-size:.84rem}.merchant-ai-insight span{margin-top:3px;font-size:.78rem;line-height:1.45}.merchant-ai-insight small{margin-top:6px;color:#5e816b;font-size:.7rem;font-weight:700}
