@@ -17,4 +17,9 @@ export interface DemoRecommendation {
   validUntil: string
 }
 
+export interface ClaimedCoupon {
+  code: string
+  isCloudIssued: boolean
+}
+
 export type ExplorerStage = 'welcome' | 'intent' | 'recommendation' | 'coupon'

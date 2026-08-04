@@ -1,8 +1,14 @@
 import type { DemoRecommendation } from '../types'
 
-interface RecommendationCardProps { recommendation: DemoRecommendation; onClaim: () => void }
+interface RecommendationCardProps {
+  recommendation: DemoRecommendation
+  onClaim: () => void
+  claimError?: string
+  isClaiming?: boolean
+  usesCloudOffer?: boolean
+}
 
-export function RecommendationCard({ recommendation, onClaim }: RecommendationCardProps) {
+export function RecommendationCard({ recommendation, onClaim, claimError, isClaiming = false, usesCloudOffer = false }: RecommendationCardProps) {
   return <section aria-label="AI 示範推薦" style={{ marginTop: 20 }}>
     <div style={{ background: '#fff3df', border: '1px solid #eac99d', borderRadius: 12, color: '#77522d', fontSize: 13, padding: '9px 12px' }}>AI 依已驗證的示範資料產生推薦；店家與優惠均非真實合作資訊。</div>
     <article style={{ background: '#fffaf3', border: '1px solid #ead9c7', borderRadius: 16, marginTop: 12, padding: 18 }}>
@@ -12,7 +18,8 @@ export function RecommendationCard({ recommendation, onClaim }: RecommendationCa
       <div style={{ background: '#f4e4d1', borderRadius: 10, color: '#59331c', fontSize: 14, lineHeight: 1.55, marginTop: 14, padding: 12 }}><strong>為什麼推薦？</strong><br />{recommendation.reason}</div>
       <p style={{ color: '#9f3f22', fontWeight: 700, margin: '16px 0 3px' }}>{recommendation.offer}</p>
       <p style={{ color: '#766557', fontSize: 13, margin: 0 }}>示範優惠期限：{recommendation.validUntil}</p>
-      <button type="button" onClick={onClaim} style={buttonStyle}>領取示範優惠券</button>
+      {claimError && <p role="alert" style={{ color: '#a4261d', fontSize: 14, lineHeight: 1.5, margin: '14px 0 0' }}>{claimError}</p>}
+      <button type="button" onClick={onClaim} disabled={isClaiming} style={{ ...buttonStyle, cursor: isClaiming ? 'wait' : 'pointer', opacity: isClaiming ? .7 : 1 }}>{isClaiming ? '領取中…' : usesCloudOffer ? '登入後領取優惠券' : '領取示範優惠券'}</button>
     </article>
   </section>
 }
