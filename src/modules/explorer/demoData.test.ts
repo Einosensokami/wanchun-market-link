@@ -6,9 +6,11 @@ describe('explorer demo recommendations', () => {
     expect(intentOptions.map((option) => option.id)).toEqual(['worship', 'culture', 'food', 'gift'])
   })
 
-  it('keeps worship recommendations on the verified demo merchant', () => {
-    const recommendation = getRecommendation('worship')
-    expect(recommendation.id).toBe('demo-spring-gift')
-    expect(recommendation.offer).toContain('NT$300')
+  it('keeps each intent on a distinct controlled recommendation', () => {
+    expect(getRecommendation('worship').id).toBe('demo-prayer-route')
+    expect(getRecommendation('culture').id).toBe('demo-cultural-walk')
+    expect(getRecommendation('food').id).toBe('demo-noodle-stop')
+    expect(getRecommendation('gift').id).toBe('demo-spring-gift')
+    expect(getRecommendation('gift').offer).toContain('NT$300')
   })
 })
