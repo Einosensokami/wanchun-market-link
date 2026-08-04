@@ -18,7 +18,6 @@ interface ExplorerModuleProps {
 export function ExplorerModule({ couponStatus, onClaimCoupon }: ExplorerModuleProps) {
   const [stage, setStage] = useState<ExplorerStage>('welcome')
   const [intent, setIntent] = useState<VisitorIntent>('worship')
-  const [isFollowingOfficialAccount, setIsFollowingOfficialAccount] = useState(false)
   const [cloudOffer, setCloudOffer] = useState<PublishedOffer | null>(null)
   const [claimedCoupon, setClaimedCoupon] = useState<ClaimedCoupon | undefined>()
   const [claimError, setClaimError] = useState('')
@@ -63,7 +62,7 @@ export function ExplorerModule({ couponStatus, onClaimCoupon }: ExplorerModulePr
 
   return <main style={shellStyle}>
     <p style={brandStyle}>萬春・廟口通 <span style={{ color: '#8b7767', fontWeight: 500 }}>DEMO</span></p>
-    {stage === 'welcome' && <><SectionHeader eyebrow="歡迎來到萬春宮" title="先用一分鐘，找到今天的廟口路線。">參拜與文化內容為預覽；不需要輸入個人祈願。</SectionHeader><VisitPreview isFollowingOfficialAccount={isFollowingOfficialAccount} onFollowOfficialAccount={() => setIsFollowingOfficialAccount(true)} onContinue={() => setStage('intent')} /></>}
+    {stage === 'welcome' && <><SectionHeader eyebrow="歡迎來到萬春宮" title="先用一分鐘，找到今天的廟口路線。">參拜與文化內容為預覽；不需要輸入個人祈願。</SectionHeader><VisitPreview onContinue={() => setStage('intent')} /></>}
     {stage === 'intent' && <><SectionHeader eyebrow="今天想做什麼？" title="選一個方向，我來幫你安排。">你也可以隨時返回，重新選擇。</SectionHeader><IntentSelector onSelect={chooseIntent} /></>}
     {stage === 'recommendation' && <><SectionHeader eyebrow="AI 情境推薦" title="為你的萬春宮行程，加上一站。">推薦根據你選擇的情境與受控示範資料產生。</SectionHeader><RecommendationCard recommendation={recommendation} onClaim={claimCoupon} claimError={claimError} isClaiming={isClaiming} usesCloudOffer={Boolean(cloudOffer)} /></>}
     {stage === 'coupon' && <><SectionHeader eyebrow="已加入你的行程" title={couponStatus === 'redeemed' ? '示範優惠券已核銷' : '示範優惠券已領取'}>正式上線後，店家將以一次性券碼即時核銷。</SectionHeader><CouponCard couponStatus={couponStatus} claimedCoupon={claimedCoupon} recommendation={recommendation} onRestart={restart} /></>}

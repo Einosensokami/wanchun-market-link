@@ -1,10 +1,9 @@
 interface VisitPreviewProps {
-  isFollowingOfficialAccount: boolean
   onContinue: () => void
-  onFollowOfficialAccount: () => void
 }
 
-export function VisitPreview({ isFollowingOfficialAccount, onContinue, onFollowOfficialAccount }: VisitPreviewProps) {
+export function VisitPreview({ onContinue }: VisitPreviewProps) {
+  const friendUrl = import.meta.env.VITE_LINE_OA_FRIEND_URL
   return <section aria-label="萬春宮參訪與文化預覽">
     <div style={lineJourneyStyle}>
       <p style={journeyLabelStyle}>LINE 生態串連</p>
@@ -22,9 +21,9 @@ export function VisitPreview({ isFollowingOfficialAccount, onContinue, onFollowO
         <div><strong style={{ color: '#422716' }}>萬春故事｜文化小預覽</strong><p style={copyStyle}>從廟宇細節看見地方記憶；加好友後可開啟完整故事點與周邊地圖。</p></div>
       </article>
     </div>
-    {!isFollowingOfficialAccount
-      ? <button type="button" onClick={onFollowOfficialAccount} style={primaryButton}>加入「萬春・廟口通」LINE OA（示範）</button>
-      : <><p role="status" style={{ color: '#255e38', fontSize: 14, fontWeight: 700, margin: '18px 0 0' }}>✓ 已加入 OA 示範狀態，可領券並接收後續提醒。</p><aside style={oaMessageStyle}><strong>LINE OA 訊息示範</strong><span>你的「參拜後伴手禮」優惠券已加入行程；活動前一天將由 OA 提醒使用期限。</span></aside><button type="button" onClick={onContinue} style={primaryButton}>開始規劃今天的廟口行程</button></>}
+    {friendUrl ? <a href={friendUrl} style={{ ...primaryButton, display: 'block', textAlign: 'center', textDecoration: 'none' }}>在 LINE 加入「萬春・廟口通」OA</a> : <p role="status" style={missingConfigStyle}>尚未設定 OA 加好友連結；請由管理員設定後再啟用。</p>}
+    <aside style={oaMessageStyle}><strong>LINE OA 訊息示範</strong><span>你的「參拜後伴手禮」優惠券已加入行程；活動前一天將由 OA 提醒使用期限。</span></aside>
+    <button type="button" onClick={onContinue} style={primaryButton}>開始規劃今天的廟口行程</button>
   </section>
 }
 
@@ -37,3 +36,4 @@ const journeyListStyle = { display: 'grid', gap: 8, listStyle: 'none', margin: '
 const journeyStepStyle = { alignItems: 'center', color: '#3d5949', display: 'flex', fontSize: 13, gap: 9 }
 const journeyNumberStyle = { background: '#3f8060', borderRadius: 99, color: '#fff', display: 'inline-grid', fontSize: 11, height: 20, placeItems: 'center', width: 20 }
 const oaMessageStyle = { background: '#eff8f1', borderLeft: '3px solid #4c936c', borderRadius: 8, color: '#426250', display: 'grid', fontSize: 13, gap: 4, lineHeight: 1.5, marginTop: 12, padding: '10px 12px' }
+const missingConfigStyle = { background: '#fff3df', borderRadius: 10, color: '#77522d', fontSize: 13, lineHeight: 1.5, marginTop: 20, padding: '10px 12px' }
