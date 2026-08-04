@@ -1,22 +1,31 @@
 import { FormEvent, useState } from 'react'
 import { CheckCircle2, QrCode, ScanLine, XCircle } from 'lucide-react'
-import { DEMO_COUPON } from './merchantData'
-import { checkDemoCoupon, type CouponLifecycle } from '../shared/couponLifecycle'
+import { MerchantRedemptionError, redeemMerchantCoupon } from './merchantRedemption'
 import type { CouponStatus, RedemptionRecord } from './types'
 
 interface CouponValidatorProps {
-  couponStatus: CouponLifecycle
+  merchantPin: string
   onRedeem: (record: RedemptionRecord) => void
 }
 
-const couponPattern = /^[A-Z0-9-]{6,32}$/
+const couponPattern = /^[A-F0-9]{8}-[A-F0-9]{4}-[1-5][A-F0-9]{3}-[89AB][A-F0-9]{3}-[A-F0-9]{12}$/
 
-export function CouponValidator({ couponStatus, onRedeem }: CouponValidatorProps) {
+function redemptionMessage(code: string) {
+  if (code === 'coupon_not_found') return '找不到此店家可核銷的券碼。'
+  if (code === 'coupon_not_redeemable') return '此券已核銷、失效，或無法再次使用。'
+  if (code === 'coupon_expired') return '此券已過期。'
+  if (code === 'merchant_not_authorized') return '店家登入已失效，請重新登入。'
+  return `核銷服務暫時無法使用（${code}）。`
+}
+
+export function CouponValidator({ merchantPin, onRedeem }: CouponValidatorProps) {
   const [code, setCode] = useState('')
   const [status, setStatus] = useState<CouponStatus>('idle')
   const [message, setMessage] = useState('')
+  const [benefit, setBenefit] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  function verify(event: FormEvent<HTMLFormElement>) {
+  async function verify(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const normalizedCode = code.trim().toUpperCase()
     if (!couponPattern.test(normalizedCode)) {
@@ -24,25 +33,39 @@ export function CouponValidator({ couponStatus, onRedeem }: CouponValidatorProps
       setMessage('券碼格式不正確，請重新掃描或輸入。')
       return
     }
-    const check = checkDemoCoupon(normalizedCode, couponStatus, DEMO_COUPON)
-    if (check !== 'valid') {
+    setIsSubmitting(true)
+    try {
+      const result = await redeemMerchantCoupon('verify', normalizedCode, merchantPin)
+      setBenefit(result.benefitText ?? '')
+      setStatus('valid')
+      setMessage(`驗證成功：${result.benefitText ?? '此優惠可使用。'}`)
+    } catch (error) {
       setStatus('rejected')
-      setMessage(check === 'unknown' ? '找不到此券碼。此示範只接受畫面提示的測試券。' : check === 'not-claimed' ? '此券尚未由使用者端領取，請先完成訪客端流程。' : '此券已於本次示範中核銷，無法重複使用。')
-      return
+      setMessage(error instanceof MerchantRedemptionError ? redemptionMessage(error.code) : '核銷服務暫時無法使用。')
+    } finally {
+      setIsSubmitting(false)
     }
-    setStatus('valid')
-    setMessage('驗證成功：全館伴手禮滿 NT$300 折 NT$30。')
   }
 
-  function redeem() {
-    const record = {
-      code: DEMO_COUPON,
+  async function redeem() {
+    const normalizedCode = code.trim().toUpperCase()
+    setIsSubmitting(true)
+    try {
+      const result = await redeemMerchantCoupon('redeem', normalizedCode, merchantPin)
+      const record = {
+      code: normalizedCode,
       redeemedAt: new Intl.DateTimeFormat('zh-TW', { hour: '2-digit', minute: '2-digit' }).format(new Date()),
-      benefit: '滿 NT$300 折 NT$30',
+      benefit: result.benefitText ?? benefit,
+      }
+      setStatus('redeemed')
+      setMessage('核銷完成，券碼已標記為不可再次使用。')
+      onRedeem(record)
+    } catch (error) {
+      setStatus('rejected')
+      setMessage(error instanceof MerchantRedemptionError ? redemptionMessage(error.code) : '核銷服務暫時無法使用。')
+    } finally {
+      setIsSubmitting(false)
     }
-    setStatus('redeemed')
-    setMessage('核銷完成，券碼已標記為不可再次使用。')
-    onRedeem(record)
   }
 
   const statusIcon = status === 'rejected' ? <XCircle aria-hidden="true" /> : <CheckCircle2 aria-hidden="true" />
@@ -57,13 +80,13 @@ export function CouponValidator({ couponStatus, onRedeem }: CouponValidatorProps
       <form onSubmit={verify} noValidate>
         <label htmlFor="coupon-code">券碼</label>
         <div className="merchant-code-row">
-          <input id="coupon-code" value={code} onChange={(event) => { setCode(event.target.value.slice(0, 32)); setStatus('idle'); setMessage('') }} placeholder="輸入或掃描券碼" autoCapitalize="characters" />
-          <button type="submit" className="merchant-secondary"><QrCode size={17} aria-hidden="true" />查驗</button>
+          <input id="coupon-code" value={code} onChange={(event) => { setCode(event.target.value.slice(0, 36)); setStatus('idle'); setMessage('') }} placeholder="輸入或掃描券碼" autoCapitalize="characters" />
+          <button type="submit" className="merchant-secondary" disabled={isSubmitting}><QrCode size={17} aria-hidden="true" />{isSubmitting ? '查驗中' : '查驗'}</button>
         </div>
       </form>
-      <p className="merchant-test-code">測試券碼：<button type="button" onClick={() => { setCode(DEMO_COUPON); setStatus('idle'); setMessage('') }}>{DEMO_COUPON}</button></p>
+      <p className="merchant-test-code">請掃描或輸入訪客端顯示的雲端券碼。</p>
       {status !== 'idle' && <div className={`merchant-coupon-result is-${status}`} role="status">{statusIcon}<div><strong>{status === 'valid' ? '可核銷' : status === 'redeemed' ? '已核銷' : '無法核銷'}</strong><span>{message}</span></div></div>}
-      {status === 'valid' && <button type="button" className="merchant-primary merchant-redeem" onClick={redeem}>確認核銷此券</button>}
+      {status === 'valid' && <button type="button" className="merchant-primary merchant-redeem" onClick={redeem} disabled={isSubmitting}>確認核銷此券</button>}
     </section>
   )
 }

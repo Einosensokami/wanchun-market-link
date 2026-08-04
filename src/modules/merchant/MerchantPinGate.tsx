@@ -3,7 +3,7 @@ import { LockKeyhole, ShieldCheck } from 'lucide-react'
 import { DEMO_PIN } from './merchantData'
 
 interface MerchantPinGateProps {
-  onUnlock: () => void
+  onUnlock: (pin: string) => void
 }
 
 export function MerchantPinGate({ onUnlock }: MerchantPinGateProps) {
@@ -22,7 +22,7 @@ export function MerchantPinGate({ onUnlock }: MerchantPinGateProps) {
       return
     }
     setError('')
-    onUnlock()
+    onUnlock(pin)
   }
 
   return (
