@@ -1,4 +1,4 @@
-import type { DemoRecommendation, IntentOption, VisitorIntent } from './types'
+import type { DemoRecommendation, IntentOption, JourneyPlan, VisitorIntent } from './types'
 
 export const intentOptions: IntentOption[] = [
   { id: 'worship', title: '安心參拜', description: '3 分鐘掌握參拜動線', emoji: '🙏' },
@@ -35,3 +35,36 @@ const recommendations: Record<VisitorIntent, DemoRecommendation> = {
 }
 
 export const getRecommendation = (intent: VisitorIntent): DemoRecommendation => recommendations[intent]
+
+const intentMatchers: Record<VisitorIntent, RegExp> = {
+  worship: /參拜|拜拜|祈福|平安|長輩|長者|家人|家族/,
+  culture: /文化|歷史|故事|導覽|建築|散步|走走/,
+  food: /吃|餐|午餐|晚餐|美食|餓|喝|休息/,
+  gift: /伴手禮|禮物|送人|糕餅|餅|帶回|特產/,
+}
+
+/**
+ * Contest-safe natural-language intent interpretation. It only maps a message
+ * to the four supported, verified content categories and never generates
+ * religious advice or merchant facts.
+ */
+export function planJourneyFromMessage(message: string): JourneyPlan {
+  const detectedIntents = (Object.keys(intentMatchers) as VisitorIntent[])
+    .filter((intent) => intentMatchers[intent].test(message))
+
+  const supportedIntents: VisitorIntent[] = detectedIntents.length > 0 ? detectedIntents : ['worship']
+  const primaryIntent = supportedIntents.includes('gift')
+    ? 'gift'
+    : supportedIntents.includes('food')
+      ? 'food'
+      : supportedIntents[0]
+  const labels = supportedIntents.map((intent) => intentOptions.find((option) => option.id === intent)?.title).join('、')
+
+  return {
+    primaryIntent,
+    detectedIntents: supportedIntents,
+    summary: detectedIntents.length > 0
+      ? `我理解你想安排：${labels}。先替你排出最適合開始的一站。`
+      : '我先以安心參拜為起點，提供不涉及個人祈願內容的參訪路線。',
+  }
+}

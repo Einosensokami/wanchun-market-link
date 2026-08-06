@@ -17,6 +17,12 @@ export interface DemoRecommendation {
   validUntil: string
 }
 
+export interface JourneyPlan {
+  primaryIntent: VisitorIntent
+  detectedIntents: VisitorIntent[]
+  summary: string
+}
+
 export interface ClaimedCoupon {
   code: string
   isCloudIssued: boolean

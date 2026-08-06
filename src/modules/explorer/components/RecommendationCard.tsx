@@ -7,11 +7,14 @@ interface RecommendationCardProps {
   isClaiming?: boolean
   usesCloudOffer?: boolean
   canClaim?: boolean
+  journeySummary?: string
+  detectedIntentLabels?: string
 }
 
-export function RecommendationCard({ recommendation, onClaim, claimError, isClaiming = false, usesCloudOffer = false, canClaim = true }: RecommendationCardProps) {
+export function RecommendationCard({ recommendation, onClaim, claimError, isClaiming = false, usesCloudOffer = false, canClaim = true, journeySummary, detectedIntentLabels }: RecommendationCardProps) {
   return <section aria-label="AI 示範推薦" style={{ marginTop: 20 }}>
     <div style={{ background: '#fff3df', border: '1px solid #eac99d', borderRadius: 12, color: '#77522d', fontSize: 13, padding: '9px 12px' }}>AI 依已驗證的示範資料產生推薦；店家與優惠均非真實合作資訊。</div>
+    {journeySummary && <div style={{ background: '#edf5ef', border: '1px solid #b9d6c0', borderRadius: 12, color: '#28563a', fontSize: 14, lineHeight: 1.55, marginTop: 12, padding: 12 }}><strong>AI 行程理解</strong><br />{journeySummary}{detectedIntentLabels && <><br /><span style={{ fontSize: 13 }}>辨識到：{detectedIntentLabels}</span></>}</div>}
     <article style={{ background: '#fffaf3', border: '1px solid #ead9c7', borderRadius: 16, marginTop: 12, padding: 18 }}>
       <p style={{ color: '#9f5c2a', fontSize: 13, fontWeight: 700, margin: 0 }}>{recommendation.category}</p>
       <h3 style={{ color: '#422716', fontSize: 22, margin: '7px 0' }}>{recommendation.name}</h3>
